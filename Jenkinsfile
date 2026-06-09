@@ -15,10 +15,12 @@ pipeline {
                 script {
                     def imageTag = "todoui:${env.BUILD_NUMBER}"
                     env.IMAGE = imageTag
+                    // Determine build context: if a subfolder 'todui' exists use it, otherwise use current dir
+                    def buildCtx = fileExists('todui') ? 'todui' : '.'
                     if (isUnix()) {
-                        sh "docker build -t ${imageTag} todui"
+                        sh "docker build -t ${imageTag} ${buildCtx}"
                     } else {
-                        bat "docker build -t ${imageTag} todui"
+                        bat "docker build -t ${imageTag} ${buildCtx}"
                     }
                 }
             }
