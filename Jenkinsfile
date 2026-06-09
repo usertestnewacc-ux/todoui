@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        CONT = "todui"
+        CONT = "todoui"
     }
 
     stages {
@@ -13,7 +13,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def imageTag = "todui:${env.BUILD_NUMBER}"
+                    def imageTag = "todoui:${env.BUILD_NUMBER}"
                     env.IMAGE = imageTag
                     if (isUnix()) {
                         sh "docker build -t ${imageTag} todui"
