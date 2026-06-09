@@ -15,8 +15,21 @@ pipeline {
                 script {
                     def imageTag = "todoui:${env.BUILD_NUMBER}"
                     env.IMAGE = imageTag
-                    // Determine build context: if a subfolder 'todui' exists use it, otherwise use current dir
-                    def buildCtx = fileExists('todui') ? 'todui' : '.'
+                    // Determine build context by checking common locations for a Dockerfile.
+                    // This handles runs where Jenkins workspace is the repo root or the `todui` subfolder.
+                    def buildCtx = '.'
+                    if (fileExists('Dockerfile')) {
+                        buildCtx = '.'
+                    } else if (fileExists('todui/Dockerfile')) {
+                        buildCtx = 'todui'
+                    } else if (fileExists('./todui/Dockerfile')) {
+                        buildCtx = 'todui'
+                    } else {
+                        // last-resort: if `todui` directory exists, use it
+                        if (fileExists('todui')) {
+                            buildCtx = 'todui'
+                        }
+                    }
                     if (isUnix()) {
                         sh "docker build -t ${imageTag} ${buildCtx}"
                     } else {
